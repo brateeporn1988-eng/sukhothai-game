@@ -102,7 +102,6 @@
                 <i class="fa-solid fa-user text-sukhothai-red text-sm"></i>
                 <span id="display-user-id" class="text-sm font-semibold"></span>
                 <span id="display-group-id" class="text-xs bg-sukhothai-earth text-white px-2 rounded-full"></span>
-                <!-- ปุ่มออกจากระบบที่เพิ่มมาใหม่ -->
                 <button onclick="logoutParticipant()" class="text-red-400 hover:text-red-700 ml-1 px-1" title="ออกจากระบบ">
                     <i class="fa-solid fa-right-from-bracket"></i>
                 </button>
@@ -151,7 +150,7 @@
             
             <div class="flex-1 w-full bg-black rounded-xl overflow-hidden shadow-lg relative min-h-[400px]">
                 <div id="canva-container" class="w-full h-full absolute inset-0 flex items-center justify-center bg-gray-900 text-gray-500">
-                    <p><i class="fa-solid fa-spinner fa-spin mr-2"></i> กำลังโหลดสื่อการเรียนรู้...</p>
+                    <p><i class="fa-solid fa-spinner fa-spin mr-2"></i> วิทยากรจะเปิดสไลด์ในหน้านี้ (ดูหน้าจอหลัก)</p>
                 </div>
             </div>
 
@@ -175,6 +174,7 @@
 
             <!-- Game Accordion -->
             <div class="space-y-4 mb-8">
+                <!-- Game 1 -->
                 <div class="glass-panel rounded-xl overflow-hidden">
                     <button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-gray-50 transition" onclick="toggleAccordion('game-1-content')">
                         <div class="flex items-center gap-3">
@@ -187,10 +187,13 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-1-icon"></i>
                     </button>
                     <div id="game-1-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-1-container" class="w-full flex justify-center text-gray-500 text-sm">(ยังไม่มีโค้ดฝังเกม)</div>
+                        <div id="game-1-container" class="w-full">
+                            <iframe src="https://wordwall.net/embed/play/15291/319/335" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Game 2 -->
                 <div class="glass-panel rounded-xl overflow-hidden">
                     <button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-gray-50 transition" onclick="toggleAccordion('game-2-content')">
                         <div class="flex items-center gap-3">
@@ -203,10 +206,13 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-2-icon"></i>
                     </button>
                     <div id="game-2-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-2-container" class="w-full flex justify-center text-gray-500 text-sm">(ยังไม่มีโค้ดฝังเกม)</div>
+                        <div id="game-2-container" class="w-full">
+                            <iframe src="https://wordwall.net/embed/play/13214/833/328" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Game 3 -->
                 <div class="glass-panel rounded-xl overflow-hidden">
                     <button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-gray-50 transition" onclick="toggleAccordion('game-3-content')">
                         <div class="flex items-center gap-3">
@@ -219,10 +225,13 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-3-icon"></i>
                     </button>
                     <div id="game-3-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-3-container" class="w-full flex justify-center text-gray-500 text-sm">(ยังไม่มีโค้ดฝังเกม Bingo)</div>
+                        <div id="game-3-container" class="w-full">
+                            <iframe src="https://wordwall.net/embed/play/13214/833/328" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
+                        </div>
                     </div>
                 </div>
                 
+                <!-- Game 4 -->
                 <div class="glass-panel rounded-xl overflow-hidden">
                     <button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-gray-50 transition" onclick="toggleAccordion('game-4-content')">
                         <div class="flex items-center gap-3">
@@ -235,10 +244,13 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-4-icon"></i>
                     </button>
                     <div id="game-4-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-4-container" class="w-full flex justify-center text-gray-500 text-sm">(ยังไม่มีโค้ดฝังเกม Matching)</div>
+                        <div id="game-4-container" class="w-full">
+                            <iframe src="https://wordwall.net/embed/play/14352/633/343" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Game 5 -->
                 <div class="glass-panel rounded-xl overflow-hidden">
                     <button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-gray-50 transition" onclick="toggleAccordion('game-5-content')">
                         <div class="flex items-center gap-3">
@@ -251,7 +263,9 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-5-icon"></i>
                     </button>
                     <div id="game-5-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-5-container" class="w-full flex justify-center text-gray-500 text-sm">(ยังไม่มีโค้ดฝังเกม Choice Path)</div>
+                        <div id="game-5-container" class="w-full">
+                            <iframe src="https://wordwall.net/embed/play/16431/944/394" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -477,7 +491,7 @@
                 <button onclick="closeAdminLogin()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="space-y-4">
-                <input type="password" id="admin-pin" class="w-full p-3 rounded-lg border border-gray-300 text-center tracking-widest text-lg" placeholder="รหัสผ่าน (1234)">
+                <input type="password" id="admin-pin" class="w-full p-3 rounded-lg border border-gray-300 text-center tracking-widest text-lg" placeholder="รหัสผ่าน (xxxx)">
                 <button onclick="verifyAdmin()" class="w-full bg-gray-800 text-white py-3 rounded-lg font-bold">ยืนยัน</button>
             </div>
         </div>
@@ -509,10 +523,15 @@
                 </table>
             </div>
             <div class="flex-1 bg-white rounded-xl shadow-sm border p-6 flex-col hidden" id="admin-view-settings">
-                <h2 class="text-xl font-bold mb-4 border-b pb-2">ตั้งค่าสื่อและโค้ดฝัง (Embed Codes)</h2>
+                <h2 class="text-xl font-bold mb-4 border-b pb-2">ตั้งค่าสื่อเพิ่มเติม</h2>
                 <form id="admin-settings-form" class="space-y-4">
-                    <div><label class="block font-bold">สไลด์การเรียนรู้ (Canva Embed)</label><textarea id="set-canva" rows="3" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
+                    <p class="text-sm text-gray-500">หากต้องการเปลี่ยนเกมจำลองในหน้าจอ สามารถนำโค้ดมาใส่ตรงนี้ได้เลยค่ะ ถ้าไม่ใส่ ระบบจะแสดงเกมเริ่มต้นให้</p>
+                    <div><label class="block font-bold">สไลด์การเรียนรู้ (Canva Embed)</label><textarea id="set-canva" rows="2" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
                     <div><label class="block font-bold">GAME 1: บันไดงู</label><textarea id="set-game-1" rows="2" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
+                    <div><label class="block font-bold">GAME 2: เกมไพ่</label><textarea id="set-game-2" rows="2" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
+                    <div><label class="block font-bold">GAME 3: Bingo</label><textarea id="set-game-3" rows="2" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
+                    <div><label class="block font-bold">GAME 4: Matching</label><textarea id="set-game-4" rows="2" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
+                    <div><label class="block font-bold">GAME 5: Choice Path</label><textarea id="set-game-5" rows="2" class="w-full p-2 border rounded font-mono text-xs"></textarea></div>
                     <button type="button" onclick="saveAdminSettings()" class="bg-black text-white px-6 py-2 rounded font-bold mt-4">บันทึกการตั้งค่า</button>
                 </form>
             </div>
@@ -704,6 +723,17 @@
                     const s = docSnap.data();
                     if(document.getElementById('canva-container') && s.canva_embed) document.getElementById('canva-container').innerHTML = s.canva_embed;
                     if(document.getElementById('game-1-container') && s.game_1_embed) document.getElementById('game-1-container').innerHTML = s.game_1_embed;
+                    if(document.getElementById('game-2-container') && s.game_2_embed) document.getElementById('game-2-container').innerHTML = s.game_2_embed;
+                    if(document.getElementById('game-3-container') && s.game_3_embed) document.getElementById('game-3-container').innerHTML = s.game_3_embed;
+                    if(document.getElementById('game-4-container') && s.game_4_embed) document.getElementById('game-4-container').innerHTML = s.game_4_embed;
+                    if(document.getElementById('game-5-container') && s.game_5_embed) document.getElementById('game-5-container').innerHTML = s.game_5_embed;
+                    
+                    if(document.getElementById('set-canva')) document.getElementById('set-canva').value = s.canva_embed || '';
+                    if(document.getElementById('set-game-1')) document.getElementById('set-game-1').value = s.game_1_embed || '';
+                    if(document.getElementById('set-game-2')) document.getElementById('set-game-2').value = s.game_2_embed || '';
+                    if(document.getElementById('set-game-3')) document.getElementById('set-game-3').value = s.game_3_embed || '';
+                    if(document.getElementById('set-game-4')) document.getElementById('set-game-4').value = s.game_4_embed || '';
+                    if(document.getElementById('set-game-5')) document.getElementById('set-game-5').value = s.game_5_embed || '';
                 }
             });
         }
@@ -763,7 +793,11 @@
         window.saveAdminSettings = async () => {
             await setDoc(doc(db, 'settings', 'global'), {
                 canva_embed: document.getElementById('set-canva').value,
-                game_1_embed: document.getElementById('set-game-1').value
+                game_1_embed: document.getElementById('set-game-1').value,
+                game_2_embed: document.getElementById('set-game-2').value,
+                game_3_embed: document.getElementById('set-game-3').value,
+                game_4_embed: document.getElementById('set-game-4').value,
+                game_5_embed: document.getElementById('set-game-5').value
             }, {merge: true});
             showToast("บันทึกการตั้งค่าสำเร็จ", "success");
         };
