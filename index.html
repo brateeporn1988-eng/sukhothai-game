@@ -538,13 +538,11 @@
         </div>
     </div>
     <div id="toast-container"></div>
-
-    <script type="module">
+<script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, addDoc, onSnapshot, query, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // กุญแจ Firebase ของคุณครู
         const firebaseConfig = {
             apiKey: "AIzaSyAUP0HuhOlegvW0TgMAhZxQ_i-nFl45NFI",
             authDomain: "sukhothai-game-f68f9.firebaseapp.com",
@@ -559,9 +557,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        window.AppState = {
-            user: null, participant: null, games: [], userVotes: [], allVotes: [], participants: []
-        };
+        window.AppState = { user: null, participant: null, games: [], userVotes: [], allVotes: [], participants: [] };
         const MAX_VOTES = 3;
         const appId = 'sukhothai-game';
 
@@ -581,9 +577,13 @@
             try {
                 await signInAnonymously(auth);
                 AppState.user = auth.currentUser;
+                
+                // เปิดท่อข้อมูล Real-time ทันทีที่โหลดเว็บ (แก้ปัญหาแอดมินมองไม่เห็นข้อมูล)
+                initRealtimeListeners(); 
+                
                 checkExistingSession();
             } catch (e) {
-                showToast("เชื่อมต่อระบบไม่สำเร็จ", "error");
+                showToast("เชื่อมต่อระบบฐานข้อมูลไม่สำเร็จ", "error");
             }
         }
 
@@ -593,7 +593,6 @@
                 AppState.participant = JSON.parse(saved);
                 updateUIAfterLogin();
                 navigatePage('page-3');
-                initRealtimeListeners();
             } else {
                 navigatePage('page-1');
             }
@@ -643,7 +642,6 @@
                 localStorage.setItem(`participant_${appId}`, JSON.stringify(data));
                 document.getElementById('reg-modal').classList.add('hidden');
                 updateUIAfterLogin();
-                initRealtimeListeners();
                 navigatePage('page-2');
                 showToast("เข้าสู่ระบบสำเร็จ", "success");
             } catch(err) { showToast("เกิดข้อผิดพลาด", "error"); }
@@ -654,7 +652,7 @@
             document.getElementById('user-profile-badge').classList.add('flex');
             document.getElementById('display-user-id').textContent = AppState.participant.name.split(' ')[0];
             document.getElementById('display-group-id').textContent = AppState.participant.group_id;
-            document.getElementById('manual-group-id').textContent = AppState.participant.group_id;
+            if(document.getElementById('manual-group-id')) document.getElementById('manual-group-id').textContent = AppState.participant.group_id;
         }
 
         window.toggleFormPart = function(num) {
@@ -709,8 +707,10 @@
             });
             onSnapshot(collection(db, 'votes'), (snap) => {
                 AppState.allVotes = snap.docs.map(d => d.data());
-                AppState.userVotes = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(v => v.participant_id === AppState.participant.participant_id);
-                document.getElementById('vote-count-display').textContent = AppState.userVotes.length;
+                if (AppState.participant) {
+                    AppState.userVotes = AppState.allVotes.filter(v => v.participant_id === AppState.participant.participant_id);
+                    if(document.getElementById('vote-count-display')) document.getElementById('vote-count-display').textContent = AppState.userVotes.length;
+                }
                 renderGamesGallery();
                 renderAdminDashboard();
             });
@@ -740,13 +740,17 @@
 
         function renderGamesGallery() {
             const grid = document.getElementById('games-grid');
+            if(!grid) return;
+            
             document.getElementById('games-loader').classList.add('hidden');
             grid.classList.remove('hidden');
             grid.innerHTML = '';
             AppState.games.forEach(g => {
                 const votes = AppState.allVotes.filter(v => v.game_id === g.id).length;
                 const hasVoted = AppState.userVotes.some(v => v.game_id === g.id);
-                const isMyGroup = g.group_id === AppState.participant.group_id;
+                // ตรวจสอบอย่างปลอดภัยว่ามีผู้ใช้ล็อกอินอยู่หรือไม่
+                const isMyGroup = AppState.participant ? (g.group_id === AppState.participant.group_id) : false;
+                const isDisabled = isMyGroup || !AppState.participant;
                 
                 const card = document.createElement('div');
                 card.className = 'glass-panel rounded-xl p-5 flex flex-col shadow';
@@ -754,7 +758,7 @@
                     <div class="flex justify-between items-center mb-2"><span class="text-xs bg-gray-200 px-2 py-1 rounded">${g.group_id}</span><span class="text-xs text-sukhothai-red"><i class="fa-solid fa-heart"></i> ${votes}</span></div>
                     <h3 class="font-bold text-lg mb-2">${g.game_name}</h3>
                     <p class="text-xs text-gray-500 mb-4 flex-1">${g.rules.substring(0, 50)}...</p>
-                    <button onclick="toggleVote('${g.id}', ${hasVoted})" class="w-full py-2 rounded text-sm font-bold ${isMyGroup ? 'bg-gray-200 text-gray-400' : hasVoted ? 'bg-sukhothai-red text-white' : 'border border-sukhothai-red text-sukhothai-red'}" ${isMyGroup ? 'disabled' : ''}>
+                    <button onclick="toggleVote('${g.id}', ${hasVoted})" class="w-full py-2 rounded text-sm font-bold ${isDisabled ? 'bg-gray-200 text-gray-400' : hasVoted ? 'bg-sukhothai-red text-white' : 'border border-sukhothai-red text-sukhothai-red'}" ${isDisabled ? 'disabled' : ''}>
                         ${hasVoted ? 'โหวตแล้ว' : 'โหวต'}
                     </button>
                 `;
@@ -763,9 +767,11 @@
         }
 
         window.toggleVote = async function(gameId, currentlyVoted) {
+            if(!AppState.participant) return; // ป้องกันแอดมินกดโหวต
+            
             if(currentlyVoted) {
                 const vote = AppState.userVotes.find(v => v.game_id === gameId);
-                await deleteDoc(doc(db, 'votes', vote.id));
+                if(vote) await deleteDoc(doc(db, 'votes', vote.id));
             } else {
                 if(AppState.userVotes.length >= MAX_VOTES) return showToast("โหวตเต็มแล้ว", "error");
                 await addDoc(collection(db, 'votes'), { participant_id: AppState.participant.participant_id, game_id: gameId });
@@ -791,18 +797,29 @@
         };
 
         window.saveAdminSettings = async () => {
-            await setDoc(doc(db, 'settings', 'global'), {
-                canva_embed: document.getElementById('set-canva').value,
-                game_1_embed: document.getElementById('set-game-1').value,
-                game_2_embed: document.getElementById('set-game-2').value,
-                game_3_embed: document.getElementById('set-game-3').value,
-                game_4_embed: document.getElementById('set-game-4').value,
-                game_5_embed: document.getElementById('set-game-5').value
-            }, {merge: true});
-            showToast("บันทึกการตั้งค่าสำเร็จ", "success");
+            const btn = document.querySelector('#admin-settings-form button');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...';
+            btn.disabled = true;
+            try {
+                await setDoc(doc(db, 'settings', 'global'), {
+                    canva_embed: document.getElementById('set-canva').value,
+                    game_1_embed: document.getElementById('set-game-1').value,
+                    game_2_embed: document.getElementById('set-game-2').value,
+                    game_3_embed: document.getElementById('set-game-3').value,
+                    game_4_embed: document.getElementById('set-game-4').value,
+                    game_5_embed: document.getElementById('set-game-5').value
+                }, {merge: true});
+                showToast("บันทึกการตั้งค่าสำเร็จ", "success");
+            } catch (e) {
+                showToast("เกิดข้อผิดพลาด", "error");
+            } finally {
+                btn.innerHTML = 'บันทึกการตั้งค่า';
+                btn.disabled = false;
+            }
         };
 
         function renderAdminDashboard() {
+            if(!document.getElementById('stat-participants')) return;
             document.getElementById('stat-participants').textContent = AppState.participants.length;
             document.getElementById('stat-groups').textContent = new Set(AppState.participants.map(p=>p.group_id)).size;
             document.getElementById('stat-games').textContent = AppState.games.length;
