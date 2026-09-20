@@ -491,7 +491,7 @@
                 <button onclick="closeAdminLogin()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="space-y-4">
-                <input type="password" id="admin-pin" class="w-full p-3 rounded-lg border border-gray-300 text-center tracking-widest text-lg" placeholder="รหัสผ่าน (xxxx)">
+                <input type="password" id="admin-pin" class="w-full p-3 rounded-lg border border-gray-300 text-center tracking-widest text-lg" placeholder="รหัสผ่าน (1234)">
                 <button onclick="verifyAdmin()" class="w-full bg-gray-800 text-white py-3 rounded-lg font-bold">ยืนยัน</button>
             </div>
         </div>
@@ -513,8 +513,12 @@
                 <div class="bg-white p-4 rounded-xl shadow-sm border"><h3 class="text-xs font-bold text-gray-500">กลุ่ม</h3><p class="text-3xl font-bold text-purple-600" id="stat-groups">0</p></div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border"><h3 class="text-xs font-bold text-gray-500">ผลงานเกม</h3><p class="text-3xl font-bold text-blue-600" id="stat-games">0</p></div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border"><h3 class="text-xs font-bold text-gray-500">ยอดโหวตรวม</h3><p class="text-3xl font-bold text-red-500" id="stat-votes">0</p></div>
-                <button onclick="exportData('games')" class="w-full bg-green-600 text-white py-2 rounded-lg mt-4 font-bold"><i class="fa-solid fa-file-excel"></i> Export ข้อมูลเกม (CSV)</button>
+                
+                <!-- ปุ่มจัดการข้อมูล -->
+                <button onclick="exportData()" class="w-full bg-green-600 text-white py-2 rounded-lg mt-4 font-bold hover:bg-green-700 transition"><i class="fa-solid fa-file-excel"></i> Export ข้อมูลเกม (CSV)</button>
+                <button onclick="resetDatabase()" class="w-full bg-red-600 text-white py-2 rounded-lg mt-2 font-bold hover:bg-red-700 transition"><i class="fa-solid fa-trash-can"></i> ล้างข้อมูลทั้งหมด (Reset)</button>
             </div>
+            
             <div class="flex-1 bg-white rounded-xl shadow-sm border p-6 flex flex-col" id="admin-view-overview">
                 <h2 class="text-xl font-bold mb-4 border-b pb-2">ตารางอันดับผลงานเกม (Real-time)</h2>
                 <table class="w-full text-left border-collapse text-sm">
@@ -538,11 +542,14 @@
         </div>
     </div>
     <div id="toast-container"></div>
-<script type="module">
+
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, addDoc, onSnapshot, query, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // เพิ่ม getDocs สำหรับดึงข้อมูลมาลบ
+        import { getFirestore, doc, setDoc, collection, addDoc, onSnapshot, query, deleteDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // กุญแจ Firebase ของคุณครู
         const firebaseConfig = {
             apiKey: "AIzaSyAUP0HuhOlegvW0TgMAhZxQ_i-nFl45NFI",
             authDomain: "sukhothai-game-f68f9.firebaseapp.com",
@@ -557,7 +564,9 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        window.AppState = { user: null, participant: null, games: [], userVotes: [], allVotes: [], participants: [] };
+        window.AppState = {
+            user: null, participant: null, games: [], userVotes: [], allVotes: [], participants: []
+        };
         const MAX_VOTES = 3;
         const appId = 'sukhothai-game';
 
@@ -578,12 +587,12 @@
                 await signInAnonymously(auth);
                 AppState.user = auth.currentUser;
                 
-                // เปิดท่อข้อมูล Real-time ทันทีที่โหลดเว็บ (แก้ปัญหาแอดมินมองไม่เห็นข้อมูล)
-                initRealtimeListeners(); 
+                // ย้ายการเปิดท่อข้อมูลมาไว้ตรงนี้ เพื่อให้แอดมินมองเห็นข้อมูลทันทีโดยไม่ต้องลงทะเบียน
+                initRealtimeListeners();
                 
                 checkExistingSession();
             } catch (e) {
-                showToast("เชื่อมต่อระบบฐานข้อมูลไม่สำเร็จ", "error");
+                showToast("เชื่อมต่อระบบไม่สำเร็จ", "error");
             }
         }
 
@@ -652,7 +661,7 @@
             document.getElementById('user-profile-badge').classList.add('flex');
             document.getElementById('display-user-id').textContent = AppState.participant.name.split(' ')[0];
             document.getElementById('display-group-id').textContent = AppState.participant.group_id;
-            if(document.getElementById('manual-group-id')) document.getElementById('manual-group-id').textContent = AppState.participant.group_id;
+            document.getElementById('manual-group-id').textContent = AppState.participant.group_id;
         }
 
         window.toggleFormPart = function(num) {
@@ -748,7 +757,6 @@
             AppState.games.forEach(g => {
                 const votes = AppState.allVotes.filter(v => v.game_id === g.id).length;
                 const hasVoted = AppState.userVotes.some(v => v.game_id === g.id);
-                // ตรวจสอบอย่างปลอดภัยว่ามีผู้ใช้ล็อกอินอยู่หรือไม่
                 const isMyGroup = AppState.participant ? (g.group_id === AppState.participant.group_id) : false;
                 const isDisabled = isMyGroup || !AppState.participant;
                 
@@ -767,7 +775,7 @@
         }
 
         window.toggleVote = async function(gameId, currentlyVoted) {
-            if(!AppState.participant) return; // ป้องกันแอดมินกดโหวต
+            if(!AppState.participant) return; 
             
             if(currentlyVoted) {
                 const vote = AppState.userVotes.find(v => v.game_id === gameId);
@@ -844,6 +852,30 @@
             link.href = URL.createObjectURL(blob);
             link.download = "games_export.csv";
             link.click();
+        };
+
+        // ฟังก์ชันล้างข้อมูล (Reset Database)
+        window.resetDatabase = async () => {
+            if(!confirm("⚠️ คำเตือน: คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูล 'ผู้เข้าร่วม', 'ผลงานเกม' และ 'ยอดโหวต' ทั้งหมด?\n\n(แนะนำให้กด Export ข้อมูลเก็บไว้ก่อนกดยืนยัน)")) return;
+            
+            try {
+                showToast("กำลังล้างข้อมูล... กรุณารอสักครู่", "default");
+                const collectionsToClear = ['participants', 'games', 'votes'];
+                
+                for (const colName of collectionsToClear) {
+                    const snap = await getDocs(collection(db, colName));
+                    const deletePromises = snap.docs.map(d => deleteDoc(doc(db, colName, d.id)));
+                    await Promise.all(deletePromises);
+                }
+                
+                localStorage.removeItem(`participant_${appId}`);
+                
+                showToast("ล้างข้อมูลในระบบเรียบร้อยแล้ว!", "success");
+                setTimeout(() => window.location.reload(), 1500); // รีเฟรชหน้าเว็บให้แอดมินเริ่มใหม่
+            } catch(e) {
+                console.error(e);
+                showToast("เกิดข้อผิดพลาดในการล้างข้อมูล", "error");
+            }
         };
 
         window.addEventListener('DOMContentLoaded', initApp);
