@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sukhothai Matching</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; background-color: #F5F2EB; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; min-height: 100vh; }
+        .header { text-align: center; margin-bottom: 10px; width: 100%; max-width: 450px;}
+        .header h2 { color: #B24C38; margin: 0 0 5px 0; font-size: 1.5rem; }
+        .game-board { width: 100%; max-width: 450px; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box; }
+        
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold; }
+        .timer { font-size: 1.2rem; color: #E53E3E; background: #FFF5F5; padding: 5px 12px; border-radius: 8px; border: 1px solid #FED7D7; }
+        .status-msg { color: #8C705F; font-size: 0.95rem; }
+
+        .grid-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 10px; }
+        .column { display: flex; flex-direction: column; gap: 8px; }
+        .col-title { text-align: center; font-size: 0.8rem; color: #8C705F; font-weight: bold; margin-bottom: 5px;}
+
+        .card { background: #f9f9f9; border: 2px solid #E5E7EB; border-radius: 8px; padding: 10px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3; min-height: 60px; box-sizing: border-box; user-select: none; }
+        .card.word-card { font-weight: bold; color: #2C2B29; font-size: 0.95rem;}
+        .card.def-card { color: #4a4a4a; font-size: 0.8rem; }
+
+        .card.selected { background-color: #FFF9E6; border-color: #D4AF37; box-shadow: 0 0 8px rgba(212, 175, 55, 0.4); transform: scale(1.02); }
+        .card.matched { background-color: #F0FFF4; border-color: #48BB78; color: #2F855A; pointer-events: none; opacity: 0.6; }
+        .card.wrong { background-color: #FFF5F5; border-color: #F56565; color: #C53030; animation: shake 0.4s; }
+
+        @keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }
+        .btn-restart { background: #B24C38; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Prompt'; cursor: pointer; display: none; margin: 20px auto 0 auto; font-weight: bold; width: 100%; font-size: 1.1rem; box-shadow: 0 4px 6px rgba(178,76,56,0.3); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>🔗 จับคู่ ภูมิปัญญาสุโขทัย</h2>
+    </div>
+
+    <div class="game-board">
+        <div class="top-bar">
+            <div class="status-msg" id="status-msg">ระวัง! มีคำหลอกซ่อนอยู่</div>
+            <div class="timer" id="timer">⏱️ 60 วิ</div>
+        </div>
+        
+        <div class="grid-container">
+            <div class="column">
+                <div class="col-title">คำศัพท์ / สถานที่</div>
+                <div id="words-col" class="column"></div>
+            </div>
+            <div class="column">
+                <div class="col-title">ความหมาย / การใช้งาน</div>
+                <div id="defs-col" class="column"></div>
+            </div>
+        </div>
+
+        <button class="btn-restart" id="btn-restart" onclick="initGame()">เริ่มใหม่อีกครั้ง</button>
+    </div>
+
+    <script>
+        const pairsData = [
+            { id: 1, word: "ตระพัง", def: "สระน้ำที่ขุดขึ้นเพื่อกักเก็บน้ำอุปโภคบริโภค" },
+            { id: 2, word: "สรีดภงส์", def: "ทำนบกั้นน้ำและบังคับทิศทางน้ำเข้าเมือง" },
+            { id: 3, word: "เตาทุเรียง", def: "เตาเผาเครื่องปั้นดินเผาสังคโลก" },
+            { id: 4, word: "ตลาดปสาน", def: "ย่านการค้าขาย แลกเปลี่ยนสินค้า" },
+            { id: 5, word: "วัดมหาธาตุ", def: "วัดศูนย์กลางของอาณาจักรสุโขทัย" }
+        ];
+
+        // คำหลอก (ไม่มีคู่ในฝั่งคำศัพท์)
+        const fakeDefs = [
+            { id: 98, def: "เครื่องประดับทองคำในราชสำนัก" },
+            { id: 99, def: "อาวุธที่ใช้ในการทำศึกสงครามสมัยโบราณ" }
+        ];
+
+        let words = [], defs = [];
+        let selectedWordId = null, selectedDefId = null;
+        let matchedCount = 0, isChecking = false;
+        let timeLeft = 60, timerInterval;
+
+        function shuffle(array) {
+            let cur = array.length, rnd;
+            while (cur != 0) { rnd = Math.floor(Math.random() * cur); cur--; [array[cur], array[rnd]] = [array[rnd], array[cur]]; }
+            return array;
+        }
+
+        function initGame() {
+            matchedCount = 0; selectedWordId = null; selectedDefId = null; isChecking = false;
+            document.getElementById('status-msg').innerText = 'เลือกจับคู่ให้ถูกต้อง!';
+            document.getElementById('status-msg').style.color = '#B24C38';
+            document.getElementById('btn-restart').style.display = 'none';
+
+            words = shuffle(pairsData.map(p => ({ id: p.id, text: p.word })));
+            
+            // นำคำหลอกมาผสมกับความหมายจริง แล้วสับไพ่
+            let allDefs = pairsData.map(p => ({ id: p.id, text: p.def })).concat(
+                          fakeDefs.map(f => ({ id: f.id, text: f.def })));
+            defs = shuffle(allDefs);
+
+            renderBoard();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            document.getElementById('timer').innerText = `⏱️ ${timeLeft} วิ`;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = `⏱️ ${timeLeft} วิ`;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameOver(false);
+                }
+            }, 1000);
+        }
+
+        function renderBoard() {
+            const wordsCol = document.getElementById('words-col');
+            const defsCol = document.getElementById('defs-col');
+            wordsCol.innerHTML = ''; defsCol.innerHTML = '';
+
+            words.forEach(w => {
+                const div = document.createElement('div');
+                div.className = 'card word-card'; div.innerText = w.text;
+                div.id = `word-${w.id}`; div.onclick = () => selectItem('word', w.id);
+                wordsCol.appendChild(div);
+            });
+
+            defs.forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'card def-card'; div.innerText = d.text;
+                div.id = `def-${d.id}`; div.onclick = () => selectItem('def', d.id);
+                defsCol.appendChild(div);
+            });
+        }
+
+        function selectItem(type, id) {
+            if (isChecking || timeLeft <= 0) return; 
+            
+            if (type === 'word') {
+                if (selectedWordId) document.getElementById(`word-${selectedWordId}`).classList.remove('selected');
+                selectedWordId = id; document.getElementById(`word-${id}`).classList.add('selected');
+            } else {
+                if (selectedDefId) document.getElementById(`def-${selectedDefId}`).classList.remove('selected');
+                selectedDefId = id; document.getElementById(`def-${id}`).classList.add('selected');
+            }
+
+            if (selectedWordId && selectedDefId) checkMatch();
+        }
+
+        function checkMatch() {
+            isChecking = true;
+            const wordEl = document.getElementById(`word-${selectedWordId}`);
+            const defEl = document.getElementById(`def-${selectedDefId}`);
+
+            if (selectedWordId === selectedDefId) {
+                wordEl.classList.remove('selected'); defEl.classList.remove('selected');
+                wordEl.classList.add('matched'); defEl.classList.add('matched');
+                matchedCount++;
+                resetSelection();
+
+                if (matchedCount === pairsData.length) {
+                    clearInterval(timerInterval);
+                    gameOver(true);
+                }
+            } else {
+                // ตอบผิด ให้หักเวลา 5 วินาที เป็นบทลงโทษ
+                timeLeft = Math.max(0, timeLeft - 5);
+                document.getElementById('timer').innerText = `⏱️ ${timeLeft} วิ`;
+                document.getElementById('timer').style.color = 'red';
+                setTimeout(() => document.getElementById('timer').style.color = '#E53E3E', 500);
+
+                wordEl.classList.remove('selected'); defEl.classList.remove('selected');
+                wordEl.classList.add('wrong'); defEl.classList.add('wrong');
+
+                setTimeout(() => {
+                    wordEl.classList.remove('wrong'); defEl.classList.remove('wrong');
+                    resetSelection();
+                }, 600);
+            }
+        }
+
+        function resetSelection() { selectedWordId = null; selectedDefId = null; isChecking = false; }
+
+        function gameOver(isWin) {
+            isChecking = true;
+            if(isWin) {
+                document.getElementById('status-msg').innerText = '🎉 ชนะแล้ว! คุณเจ๋งมาก';
+                document.getElementById('status-msg').style.color = '#48BB78';
+            } else {
+                document.getElementById('status-msg').innerText = '💀 หมดเวลา! ศึกษามาใหม่นะ';
+                document.getElementById('status-msg').style.color = '#C53030';
+            }
+            document.getElementById('btn-restart').style.display = 'block';
+        }
+
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

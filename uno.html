@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sukhothai UNO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; background-color: #F5F2EB; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .header h2 { color: #B24C38; margin: 0 0 5px 0; font-size: 1.5rem; }
+        .header p { color: #8C705F; margin: 0; font-size: 0.85rem; }
+        .game-board { width: 100%; max-width: 380px; background: white; border-radius: 12px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); box-sizing: border-box; text-align: center; }
+        
+        /* ไพ่ */
+        .card { width: 50px; height: 75px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; margin: 3px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 3px solid white; cursor: pointer; user-select: none; transition: transform 0.2s; position: relative; box-sizing: border-box; }
+        .card:hover { transform: translateY(-5px); }
+        .card.disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .card-inner { background: white; border-radius: 50%; width: 35px; height: 50px; display: flex; align-items: center; justify-content: center; transform: rotate(-20deg); font-weight: bold; font-size: 1.2rem; }
+        .card-inner span { transform: rotate(20deg); }
+        
+        .red { background-color: #E53E3E; } .red .card-inner { color: #E53E3E; }
+        .blue { background-color: #3182CE; } .blue .card-inner { color: #3182CE; }
+        .green { background-color: #38A169; } .green .card-inner { color: #38A169; }
+        .yellow { background-color: #D69E2E; } .yellow .card-inner { color: #D69E2E; }
+        .card-back { background-color: #2C2B29; color: #D4AF37; font-size: 0.8rem; font-weight: bold; flex-direction: column; border-color: #D4AF37; }
+        
+        .area-title { font-size: 0.8rem; color: #8C705F; font-weight: bold; margin-bottom: 5px; text-align: left;}
+        .hand-area { min-height: 85px; background: #f9f9f9; border-radius: 8px; padding: 10px; margin-bottom: 15px; display: flex; flex-wrap: wrap; justify-content: center;}
+        .center-area { display: flex; justify-content: center; gap: 30px; margin: 20px 0; align-items: center; padding: 15px; background: #fff5f5; border-radius: 12px; border: 1px solid #fed7d7;}
+        .msg-box { color: #B24C38; font-weight: bold; font-size: 0.95rem; min-height: 25px; margin-bottom: 10px; }
+        .btn-restart { background: #B24C38; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-family: 'Prompt'; cursor: pointer; display: none; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🃏 การ์ดเกม สุโขทัย UNO</h2>
+        <p>จับคู่ "สี" หรือ "เลข/สัญลักษณ์" ชิงลงไพ่ให้หมดก่อน!</p>
+    </div>
+    <div class="game-board">
+        <div class="msg-box" id="msg">ระบบกำลังแจกไพ่...</div>
+        <div class="area-title">🤖 ไพ่ของคู่แข่ง (บอท): <span id="bot-count">5</span> ใบ</div>
+        <div class="hand-area" id="bot-hand"></div>
+        <div class="center-area">
+            <div><div class="area-title" style="text-align:center;">กองจั่ว</div><div class="card card-back" onclick="drawCard()"><span>จั่ว</span></div></div>
+            <div><div class="area-title" style="text-align:center;">ไพ่ใบบนสุด</div><div id="discard-pile"></div></div>
+        </div>
+        <div class="area-title">👤 ไพ่ของคุณ:</div>
+        <div class="hand-area" id="player-hand"></div>
+        <button class="btn-restart" id="btn-restart" onclick="initGame()">เล่นใหม่อีกครั้ง</button>
+    </div>
+
+    <script>
+        const colors = ['red', 'blue', 'green', 'yellow'];
+        // เพิ่มการ์ดพิเศษ +2 และ ข้ามเทิร์น (⛔)
+        const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '+2', '⛔']; 
+        let deck = [], playerHand = [], botHand = [], topCard = null;
+        let isPlayerTurn = true, gameActive = true;
+
+        function createCardElement(card, isHidden = false, onClickFn = null) {
+            const el = document.createElement('div');
+            if (isHidden) {
+                el.className = 'card card-back disabled'; el.innerHTML = '<span>UNO</span>';
+            } else {
+                el.className = `card ${card.color}`;
+                el.innerHTML = `<div class="card-inner"><span>${card.value}</span></div>`;
+                if (onClickFn) el.onclick = () => onClickFn(card);
+            }
+            return el;
+        }
+
+        function initGame() {
+            gameActive = true; isPlayerTurn = true;
+            document.getElementById('btn-restart').style.display = 'none';
+            document.getElementById('msg').innerText = 'ตาของคุณ! เลือกไพ่ลงได้เลย';
+            
+            deck = [];
+            colors.forEach(c => values.forEach(v => deck.push({ color: c, value: v })));
+            deck.sort(() => Math.random() - 0.5);
+
+            playerHand = deck.splice(0, 5);
+            botHand = deck.splice(0, 5);
+            
+            // บังคับให้ผู้เล่นมีการ์ดสถานการณ์อย่างน้อย 1 ใบ
+            if (!playerHand.some(c => c.value === '+2' || c.value === '⛔')) {
+                const actionIdx = deck.findIndex(c => c.value === '+2' || c.value === '⛔');
+                if (actionIdx !== -1) {
+                    deck.push(playerHand[0]);
+                    playerHand[0] = deck.splice(actionIdx, 1)[0];
+                }
+            }
+
+            topCard = deck.find(c => c.value !== '+2' && c.value !== '⛔'); // ใบแรกห้ามเป็นไพ่พิเศษ
+            deck = deck.filter(c => c !== topCard);
+            render();
+        }
+
+        function isValidPlay(card) { return card.color === topCard.color || card.value === topCard.value; }
+
+        function drawFromDeck(num) {
+            let cards = [];
+            for(let i=0; i<num; i++) { if(deck.length > 0) cards.push(deck.pop()); }
+            return cards;
+        }
+
+        function playCard(card) {
+            if (!gameActive || !isPlayerTurn) return;
+            if (isValidPlay(card)) {
+                playerHand.splice(playerHand.indexOf(card), 1);
+                topCard = card;
+                render(); checkWinCondition();
+                
+                if(!gameActive) return;
+
+                // ตรวจสอบไพ่สถานการณ์
+                if(card.value === '+2') {
+                    botHand.push(...drawFromDeck(2));
+                    document.getElementById('msg').innerText = '🔥 คุณลง +2! บอทโดนจั่ว 2 ใบและเสียเทิร์น';
+                    render();
+                } else if(card.value === '⛔') {
+                    document.getElementById('msg').innerText = '🔥 คุณลงข้ามเทิร์น! บอทเสียเทิร์น';
+                } else {
+                    isPlayerTurn = false;
+                    document.getElementById('msg').innerText = 'บอทกำลังคิด...';
+                    setTimeout(botPlay, 1000);
+                }
+            } else {
+                document.getElementById('msg').innerText = '❌ ลงไม่ได้! สีหรือสัญลักษณ์ไม่ตรงกัน';
+                setTimeout(() => { if(gameActive && isPlayerTurn) document.getElementById('msg').innerText = 'ตาของคุณ!'; }, 1500);
+            }
+        }
+
+        function drawCard() {
+            if (!gameActive || !isPlayerTurn) return;
+            if (deck.length > 0) {
+                playerHand.push(...drawFromDeck(1));
+                document.getElementById('msg').innerText = 'จั่วไพ่ 1 ใบ -> สิ้นสุดเทิร์น';
+                isPlayerTurn = false; render();
+                setTimeout(botPlay, 1000);
+            }
+        }
+
+        function botPlay() {
+            if (!gameActive) return;
+            const playableIdx = botHand.findIndex(card => isValidPlay(card));
+
+            if (playableIdx !== -1) {
+                const card = botHand.splice(playableIdx, 1)[0];
+                topCard = card;
+                render(); checkWinCondition();
+
+                if(!gameActive) return;
+
+                if(card.value === '+2') {
+                    playerHand.push(...drawFromDeck(2));
+                    document.getElementById('msg').innerText = '🤖 บอทลง +2! คุณโดนจั่ว 2 ใบและเสียเทิร์น';
+                    setTimeout(botPlay, 1500); // บอทเล่นต่อ
+                } else if(card.value === '⛔') {
+                    document.getElementById('msg').innerText = '🤖 บอทลงข้ามเทิร์น! คุณเสียเทิร์น';
+                    setTimeout(botPlay, 1500); // บอทเล่นต่อ
+                } else {
+                    document.getElementById('msg').innerText = '🤖 บอทลงไพ่แล้ว! ตาของคุณ';
+                    isPlayerTurn = true;
+                }
+            } else {
+                if (deck.length > 0) botHand.push(...drawFromDeck(1));
+                document.getElementById('msg').innerText = '🤖 บอทไม่มีไพ่ บอทจั่ว 1 ใบ! ตาของคุณ';
+                isPlayerTurn = true;
+            }
+            render();
+        }
+
+        function checkWinCondition() {
+            if (playerHand.length === 0) {
+                gameActive = false; document.getElementById('msg').innerText = '🎉 ยินดีด้วย! คุณเป็นผู้ชนะ!';
+                document.getElementById('btn-restart').style.display = 'block';
+            } else if (botHand.length === 0) {
+                gameActive = false; document.getElementById('msg').innerText = '😭 บอทชนะแล้ว!';
+                document.getElementById('btn-restart').style.display = 'block';
+            }
+        }
+
+        function render() {
+            const botArea = document.getElementById('bot-hand'); botArea.innerHTML = '';
+            document.getElementById('bot-count').innerText = botHand.length;
+            botHand.forEach(() => botArea.appendChild(createCardElement(null, true)));
+
+            const discardArea = document.getElementById('discard-pile'); discardArea.innerHTML = '';
+            discardArea.appendChild(createCardElement(topCard));
+
+            const playerArea = document.getElementById('player-hand'); playerArea.innerHTML = '';
+            playerHand.forEach(card => {
+                const el = createCardElement(card, false, playCard);
+                if (!isPlayerTurn || !isValidPlay(card)) el.style.opacity = '0.7';
+                playerArea.appendChild(el);
+            });
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

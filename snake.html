@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันไดงู สุโขทัย</title>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; background-color: #F5F2EB; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .header h2 { color: #B24C38; margin: 0 0 5px 0; font-size: 1.4rem; }
+        .board { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; width: 100%; max-width: 350px; padding: 10px; background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 15px;}
+        .cell { background: #f9f9f9; border: 2px solid #E5E7EB; border-radius: 8px; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; color: #2C2B29; font-size: 1.1rem; box-sizing: border-box; flex-direction: column;}
+        .cell-icon { font-size: 1.2rem; opacity: 0.8; margin-top: -5px; }
+        .player { width: 45%; height: 45%; border-radius: 50%; position: absolute; transition: all 0.3s ease-in-out; border: 2px solid white; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
+        .p1 { background: #B24C38; bottom: 5px; left: 5px; }
+        .p2 { background: #3182CE; top: 5px; right: 5px; }
+        .ladder { background: #FFF9E6; border-color: #D4AF37; }
+        .snake { background: #FDE8E8; border-color: #F56565; }
+        .control-panel { background: white; padding: 15px; border-radius: 12px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .turn-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; color: white; font-weight: bold; margin-bottom: 10px; font-size: 0.9rem;}
+        .t-p1 { background: #B24C38; }
+        .t-p2 { background: #3182CE; }
+        .btn-roll { background: #2C2B29; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; font-family: 'Prompt'; width: 100%; cursor: pointer; }
+        .msg-box { margin-top: 10px; padding: 10px; background: #f0f0f0; border-radius: 8px; color: #333; font-size: 0.9rem; font-weight: 600; min-height: 40px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🐍 บันไดงู มรดกโลก (2 Players)</h2>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="control-panel">
+        <div id="turn-indicator" class="turn-badge t-p1">ตาของ: ผู้เล่นที่ 1 (แดง)</div>
+        <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #B24C38;" id="dice-value">🎲</div>
+        <button onclick="rollDice()" class="btn-roll" id="btn-roll">ทอยลูกเต๋า</button>
+        <div class="msg-box" id="msg">ผู้เล่นที่ 1 เริ่มก่อน!</div>
+    </div>
+
+    <script>
+        const board = document.getElementById('board');
+        const cells = [];
+        let p1 = { pos: 1, el: document.createElement('div'), hitEvent: false, name: 'ผู้เล่นที่ 1 (แดง)', cls: 't-p1' };
+        let p2 = { pos: 1, el: document.createElement('div'), hitEvent: false, name: 'ผู้เล่นที่ 2 (น้ำเงิน)', cls: 't-p2' };
+        let currentP = p1;
+        let isMoving = false;
+
+        p1.el.className = 'player p1';
+        p2.el.className = 'player p2';
+
+        const events = {
+            4: { to: 11, msg: '🪜 ขุดตระพังสำเร็จ! ไปช่อง 11', type: 'ladder', icon: '🪜' },
+            13: { to: 20, msg: '🪜 ผลิตสังคโลกได้! ไปช่อง 20', type: 'ladder', icon: '🪜' },
+            17: { to: 8, msg: '🐍 ภัยแล้งลุ่มน้ำยม! ตกไปช่อง 8', type: 'snake', icon: '🐍' },
+            22: { to: 15, msg: '🐍 เส้นทางค้าขายติดขัด! ตกไปช่อง 15', type: 'snake', icon: '🐍' }
+        };
+
+        for(let row = 4; row >= 0; row--) {
+            let rowCells = [];
+            for(let i = row*5+1; i <= row*5+5; i++) rowCells.push(i);
+            if(row % 2 !== 0) rowCells.reverse();
+            
+            rowCells.forEach(num => {
+                const div = document.createElement('div');
+                div.className = 'cell';
+                let content = num;
+                if(events[num]) {
+                    div.classList.add(events[num].type);
+                    content += `<div class="cell-icon">${events[num].icon}</div>`;
+                }
+                if(num===25) content += `<div class="cell-icon">🏁</div>`;
+                div.innerHTML = content;
+                board.appendChild(div);
+                cells[num] = div;
+            });
+        }
+        cells[1].appendChild(p1.el);
+        cells[1].appendChild(p2.el);
+
+        function updateTurnUI() {
+            const ind = document.getElementById('turn-indicator');
+            ind.innerText = `ตาของ: ${currentP.name}`;
+            ind.className = `turn-badge ${currentP.cls}`;
+        }
+
+        function rollDice() {
+            if(isMoving) return;
+            isMoving = true;
+
+            if(p1.pos === 25 || p2.pos === 25) {
+                p1.pos = 1; p2.pos = 1; p1.hitEvent = false; p2.hitEvent = false;
+                cells[1].appendChild(p1.el); cells[1].appendChild(p2.el);
+                currentP = p1; updateTurnUI();
+                document.getElementById('msg').innerText = 'เริ่มเกมใหม่!';
+                isMoving = false; return;
+            }
+
+            let dice = Math.floor(Math.random() * 6) + 1;
+
+            // กลไกบังคับ: ถ้าใกล้ถึงเส้นชัยแต่ยังไม่เคยโดนเหตุการณ์ ให้ล็อกเป้าตกงูหรือบันได
+            if(!currentP.hitEvent && currentP.pos > 10) {
+                const targetEvents = Object.keys(events).map(Number).filter(k => k > currentP.pos && (k - currentP.pos) <= 6);
+                if(targetEvents.length > 0) dice = targetEvents[0] - currentP.pos;
+            }
+
+            let rollCount = 0;
+            const diceEl = document.getElementById('dice-value');
+            const rollInt = setInterval(() => {
+                diceEl.innerText = Math.floor(Math.random() * 6) + 1;
+                rollCount++;
+                if(rollCount > 8) {
+                    clearInterval(rollInt);
+                    diceEl.innerText = dice;
+                    movePlayer(dice);
+                }
+            }, 50);
+        }
+
+        function movePlayer(steps) {
+            let newPos = currentP.pos + steps;
+            if(newPos >= 25) newPos = 25;
+            
+            currentP.pos = newPos;
+            cells[currentP.pos].appendChild(currentP.el);
+            document.getElementById('msg').innerText = `${currentP.name} เดิน ${steps} ก้าว`;
+
+            setTimeout(() => {
+                if(events[currentP.pos]) {
+                    currentP.hitEvent = true;
+                    document.getElementById('msg').innerText = events[currentP.pos].msg;
+                    currentP.pos = events[currentP.pos].to;
+                    cells[currentP.pos].appendChild(currentP.el);
+                } else if(currentP.pos === 25) {
+                    document.getElementById('msg').innerText = `🏆 ${currentP.name} เป็นผู้ชนะ!`;
+                    isMoving = false; return;
+                }
+                
+                // สลับเทิร์น
+                currentP = (currentP === p1) ? p2 : p1;
+                updateTurnUI();
+                isMoving = false;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
