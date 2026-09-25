@@ -167,7 +167,6 @@
                 <p class="text-gray-600 max-w-xl mx-auto">เกมที่ดีไม่ได้มีเพียง “เนื้อหา” แต่มี “กลไก” ที่ทำให้ผู้เล่นต้องคิด ตัดสินใจ และอยากเล่นต่อ ลองสำรวจกลไกของ 5 เกมด้านล่างนี้</p>
             </div>
 
-            <!-- Game Accordion -->
             <div class="space-y-4 mb-8">
                 <!-- Game 1 -->
                 <div class="glass-panel rounded-xl overflow-hidden">
@@ -179,9 +178,7 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-1-icon"></i>
                     </button>
                     <div id="game-1-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-1-container" class="w-full">
-                            <iframe src="https://wordwall.net/embed/play/15291/319/335" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
-                        </div>
+                        <div id="game-1-container" class="w-full"></div>
                     </div>
                 </div>
 
@@ -195,9 +192,7 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-2-icon"></i>
                     </button>
                     <div id="game-2-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-2-container" class="w-full">
-                            <iframe src="https://wordwall.net/embed/play/13214/833/328" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
-                        </div>
+                        <div id="game-2-container" class="w-full"></div>
                     </div>
                 </div>
 
@@ -211,9 +206,7 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-3-icon"></i>
                     </button>
                     <div id="game-3-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-3-container" class="w-full">
-                            <iframe src="https://wordwall.net/embed/play/13214/833/328" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
-                        </div>
+                        <div id="game-3-container" class="w-full"></div>
                     </div>
                 </div>
                 
@@ -227,9 +220,7 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-4-icon"></i>
                     </button>
                     <div id="game-4-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-4-container" class="w-full">
-                            <iframe src="https://wordwall.net/embed/play/14352/633/343" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
-                        </div>
+                        <div id="game-4-container" class="w-full"></div>
                     </div>
                 </div>
 
@@ -243,18 +234,21 @@
                         <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="game-5-icon"></i>
                     </button>
                     <div id="game-5-content" class="hidden p-6 border-t border-gray-100 bg-gray-50">
-                        <div id="game-5-container" class="w-full">
-                            <iframe src="https://wordwall.net/embed/play/16431/944/394" width="100%" height="380" frameborder="0" allowfullscreen style="border-radius: 8px;"></iframe>
-                        </div>
+                        <div id="game-5-container" class="w-full"></div>
                     </div>
                 </div>
             </div>
 
             <div class="bg-sukhothai-red/10 border border-sukhothai-red/20 rounded-xl p-6 text-center">
                 <h3 class="text-xl font-bold text-sukhothai-red mb-2">เล่นจบแล้ว... เรามาถอดกลไกกัน!</h3>
-                <button onclick="navigatePage('page-4')" class="mt-4 bg-sukhothai-red text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-red-800 transition">
-                    ไปที่การถอดกลไก (Deconstruction) <i class="fa-solid fa-wrench ml-2"></i>
-                </button>
+                <div class="mt-4 flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="navigatePage('page-2')" class="px-8 py-3 rounded-full border border-sukhothai-red text-sukhothai-red font-bold hover:bg-red-50 transition">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> กลับไปหน้าสไลด์
+                    </button>
+                    <button onclick="navigatePage('page-4')" class="bg-sukhothai-red text-white px-8 py-3 rounded-full font-bold shadow-lg hover:bg-red-800 transition">
+                        ไปที่การถอดกลไก (Deconstruction) <i class="fa-solid fa-wrench ml-2"></i>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -319,7 +313,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-8 flex justify-end">
+                    <div class="mt-8 flex justify-between">
+                        <button type="button" onclick="navigatePage('page-3')" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-600 font-bold hover:bg-gray-100 transition flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-left"></i> กลับไป Game Lab
+                        </button>
                         <button type="button" onclick="toggleFormPart(2)" class="bg-sukhothai-dark text-white px-6 py-3 rounded-lg font-bold hover:bg-black transition flex items-center gap-2">ถัดไป (กำหนดเป้าหมาย) <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
                 </div>
@@ -328,15 +325,36 @@
                 <div id="form-part-2" class="hidden">
                     <h2 class="text-2xl font-bold text-sukhothai-dark mb-2">กำหนดเป้าหมายการเรียนรู้ (บริบท)</h2>
                     <div class="space-y-6 mt-4">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-2">ทักษะที่ต้องการพัฒนา (Target Skill) <span class="text-red-500">*</span></label>
-                            <select id="ws-skill" required class="w-full p-3 rounded-lg border border-gray-300 outline-none">
-                                <option value="" disabled selected>-- เลือกทักษะ --</option>
-                                <option value="Reading Literacy (การอ่านจับใจความ)">Reading Literacy (การอ่านจับใจความ)</option>
-                                <option value="Critical Thinking (การคิดเชิงวิพากษ์)">Critical Thinking (การคิดเชิงวิพากษ์)</option>
-                                <option value="Problem Solving (การแก้ปัญหา)">Problem Solving (การแก้ปัญหา)</option>
-                                <option value="Decision Making (การตัดสินใจ)">Decision Making (การตัดสินใจ)</option>
-                            </select>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">กลุ่มสาระการเรียนรู้ <span class="text-red-500">*</span></label>
+                                <select id="ws-department" required class="w-full p-3 rounded-lg border border-gray-300 outline-none">
+                                    <option value="" disabled selected>-- เลือกกลุ่มสาระฯ --</option>
+                                    <option value="วิทยาศาสตร์และเทคโนโลยี">วิทยาศาสตร์และเทคโนโลยี</option>
+                                    <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+                                    <option value="ภาษาไทย">ภาษาไทย</option>
+                                    <option value="สังคมศึกษา ศาสนา และวัฒนธรรม">สังคมศึกษา ศาสนา และวัฒนธรรม</option>
+                                    <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+                                    <option value="ศิลปะ">ศิลปะ</option>
+                                    <option value="การงานอาชีพ">การงานอาชีพ</option>
+                                    <option value="สุขศึกษาและพลศึกษา">สุขศึกษาและพลศึกษา</option>
+                                    <option value="กิจกรรมพัฒนาผู้เรียน">กิจกรรมพัฒนาผู้เรียน</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">เนื้อหาในบทเรียน <span class="text-red-500">*</span></label>
+                                <input type="text" id="ws-subject-content" required class="w-full p-3 rounded-lg border border-gray-300 outline-none" placeholder="เช่น ระบบนิเวศ, สมการ, คำราชาศัพท์">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-2">ทักษะที่ต้องการพัฒนา <span class="text-red-500">*</span></label>
+                                <select id="ws-skill" required class="w-full p-3 rounded-lg border border-gray-300 outline-none">
+                                    <option value="" disabled selected>-- เลือกทักษะ --</option>
+                                    <option value="Reading Literacy (การอ่านจับใจความ)">Reading Literacy (การอ่านจับใจความ)</option>
+                                    <option value="Critical Thinking (การคิดเชิงวิพากษ์)">Critical Thinking (การคิดเชิงวิพากษ์)</option>
+                                    <option value="Problem Solving (การแก้ปัญหา)">Problem Solving (การแก้ปัญหา)</option>
+                                    <option value="Decision Making (การตัดสินใจ)">Decision Making (การตัดสินใจ)</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -372,7 +390,9 @@
                         </div>
                     </div>
                     <div class="mt-8 flex justify-between">
-                        <button type="button" onclick="toggleFormPart(1)" class="text-gray-500 font-bold">กลับ</button>
+                        <button type="button" onclick="toggleFormPart(1)" class="px-6 py-3 rounded-lg border border-gray-300 text-gray-600 font-bold hover:bg-gray-100 transition flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-left"></i> กลับ
+                        </button>
                         <button type="button" id="btn-save-worksheet" onclick="saveWorksheetAndProceed()" class="bg-sukhothai-red text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2">
                             สร้าง Prompt สำหรับ AI <i class="fa-solid fa-robot"></i>
                         </button>
@@ -395,7 +415,14 @@
             </div>
             <div class="mt-8 text-center bg-white p-6 rounded-xl border border-gray-200">
                 <p class="text-gray-600 mb-4 text-sm">คัดลอก Prompt ด้านบนไปวางใน ChatGPT หรือ Gemini เพื่อปรึกษากับ AI จากนั้นนำกติกาที่สรุปได้มาเขียนลงใน "คู่มือเกม"</p>
-                <button onclick="navigatePage('page-7')" class="bg-sukhothai-dark text-white px-8 py-3 rounded-full font-bold shadow hover:bg-black transition">ไปหน้าส่งงาน (คู่มือเกม) <i class="fa-solid fa-pen-nib ml-2"></i></button>
+                <div class="flex flex-col md:flex-row justify-center gap-4">
+                    <button onclick="navigatePage('page-4')" class="px-8 py-3 rounded-full border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> กลับไปแก้ไขข้อมูล
+                    </button>
+                    <button onclick="navigatePage('page-7')" class="bg-sukhothai-dark text-white px-8 py-3 rounded-full font-bold shadow hover:bg-black transition flex items-center justify-center gap-2">
+                        ไปหน้าส่งงาน (คู่มือเกม) <i class="fa-solid fa-pen-nib"></i>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -420,8 +447,16 @@
                     <label class="block text-sm font-bold text-gray-700 mb-2">กติกาและวิธีเล่น <span class="text-red-500">*</span></label>
                     <textarea id="game-rules" required rows="6" class="w-full p-3 rounded-lg border border-gray-300 outline-none" placeholder="สรุปกติกาคร่าวๆ ที่ได้จากการคุยกับ AI"></textarea>
                 </div>
-                <div class="border-t border-gray-200 pt-6">
-                    <button type="submit" id="btn-submit-game" class="w-full bg-sukhothai-red text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition text-lg flex items-center justify-center gap-2">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">ลิงก์คู่มือเกม / สื่อประกอบ (ถ้ามี)</label>
+                    <input type="text" id="game-link" class="w-full p-3 rounded-lg border border-gray-300 outline-none text-blue-600" placeholder="เช่น ลิงก์ Canva, Google Docs, สไลด์ ฯลฯ">
+                </div>
+
+                <div class="border-t border-gray-200 pt-6 flex flex-col md:flex-row gap-4">
+                    <button type="button" onclick="navigatePage('page-6')" class="w-full md:w-1/3 px-6 py-4 rounded-xl border border-gray-300 text-gray-700 font-bold hover:bg-gray-100 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> กลับ
+                    </button>
+                    <button type="submit" id="btn-submit-game" class="w-full md:w-2/3 bg-sukhothai-red text-white py-4 rounded-xl font-bold shadow-lg hover:bg-red-800 transition text-lg flex items-center justify-center gap-2">
                         ส่งผลงานเกม <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -430,6 +465,11 @@
 
         <!-- PAGE 8: VOTING GALLERY -->
         <section id="page-8" class="page-transition hidden">
+            <div class="mb-4 text-left">
+                <button onclick="navigatePage('page-7')" class="text-gray-500 hover:text-sukhothai-red font-bold text-sm flex items-center gap-2 transition">
+                    <i class="fa-solid fa-arrow-left"></i> กลับไปหน้าส่งงาน
+                </button>
+            </div>
             <div class="mb-6 text-center">
                 <i class="fa-solid fa-award text-4xl text-sukhothai-gold mb-2"></i>
                 <h2 class="text-3xl font-bold text-sukhothai-dark mb-2">โหวตเกมที่คุณอยากนำไปใช้!</h2>
@@ -473,7 +513,6 @@
                 <button onclick="closeAdminLogin()" class="text-gray-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="space-y-4">
-                <!-- แก้ออโต้คอมพลีตและคำใบ้รหัสผ่านที่นี่ -->
                 <input type="password" id="admin-pin" autocomplete="off" class="w-full p-3 rounded-lg border border-gray-300 text-center tracking-widest text-lg" placeholder="••••">
                 <button onclick="verifyAdmin()" class="w-full bg-gray-800 text-white py-3 rounded-lg font-bold">ยืนยัน</button>
             </div>
@@ -497,7 +536,6 @@
                 <div class="bg-white p-4 rounded-xl shadow-sm border"><h3 class="text-xs font-bold text-gray-500">ผลงานเกม</h3><p class="text-3xl font-bold text-blue-600" id="stat-games">0</p></div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border"><h3 class="text-xs font-bold text-gray-500">ยอดโหวตรวม</h3><p class="text-3xl font-bold text-red-500" id="stat-votes">0</p></div>
                 
-                <!-- ปุ่มจัดการข้อมูล (ปุ่มรีเซ็ตอยู่ตรงนี้) -->
                 <button onclick="exportData()" class="w-full bg-green-600 text-white py-2 rounded-lg mt-4 font-bold hover:bg-green-700 transition"><i class="fa-solid fa-file-excel"></i> Export ข้อมูลเกม (CSV)</button>
                 <button onclick="resetDatabase()" class="w-full bg-red-600 text-white py-2 rounded-lg mt-2 font-bold hover:bg-red-700 transition shadow-lg"><i class="fa-solid fa-trash-can"></i> ล้างข้อมูลทั้งหมด (Reset)</button>
             </div>
@@ -505,7 +543,7 @@
             <div class="flex-1 bg-white rounded-xl shadow-sm border p-6 flex flex-col" id="admin-view-overview">
                 <h2 class="text-xl font-bold mb-4 border-b pb-2">ตารางอันดับผลงานเกม (Real-time)</h2>
                 <table class="w-full text-left border-collapse text-sm">
-                    <thead><tr class="bg-gray-100"><th class="p-3 border-b">Rank</th><th class="p-3 border-b">กลุ่ม</th><th class="p-3 border-b">ชื่อเกม</th><th class="p-3 border-b text-center">ยอดโหวต</th></tr></thead>
+                    <thead><tr class="bg-gray-100"><th class="p-3 border-b">Rank</th><th class="p-3 border-b">ข้อมูลกลุ่ม</th><th class="p-3 border-b">ชื่อเกม</th><th class="p-3 border-b text-center">ยอดโหวต</th></tr></thead>
                     <tbody id="admin-table-body"></tbody>
                 </table>
             </div>
@@ -531,7 +569,6 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, addDoc, onSnapshot, query, deleteDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // กุญแจ Firebase ของคุณครู
         const firebaseConfig = {
             apiKey: "AIzaSyAUP0HuhOlegvW0TgMAhZxQ_i-nFl45NFI",
             authDomain: "sukhothai-game-f68f9.firebaseapp.com",
@@ -657,15 +694,15 @@
             }
         }
 
-        // --- ระบบสร้าง Prompt 6 มิติ ฉบับอัปเดตใหม่ ---
         window.saveWorksheetAndProceed = function() {
             const medium = document.getElementById('ws-medium').value;
             const theme = document.getElementById('ws-theme').value;
             const selectedGame = document.getElementById('ws-selected-game').value;
-            
             const mechanicBoxes = document.querySelectorAll('input[name="mechanics"]:checked');
             const mechanics = Array.from(mechanicBoxes).map(cb => cb.value).join(', ');
             
+            const department = document.getElementById('ws-department').value;
+            const subjectContent = document.getElementById('ws-subject-content').value; 
             const skill = document.getElementById('ws-skill').value;
             const grade = document.getElementById('ws-grade').value;
             const players = document.getElementById('ws-players').value;
@@ -673,12 +710,14 @@
             const content = document.getElementById('ws-content').value;
             const limitations = document.getElementById('ws-limitations').value;
             
-            if(!skill || !content) return showToast("กรุณากรอกทักษะและเนื้อหาให้ครบถ้วน", "error");
+            if(!department || !subjectContent || !skill || !content) return showToast("กรุณากรอกข้อมูลเป้าหมายการเรียนรู้ให้ครบถ้วน", "error");
 
             const promptText = `คุณคือผู้เชี่ยวชาญด้าน Game-Based Learning และนักออกแบบเกมการศึกษา หน้าที่ของคุณคือช่วยฉันออกแบบเกมที่นำไปใช้ในห้องเรียนได้จริง ภายใต้บริบทต่อไปนี้
 
 [Context & Medium]
-• เนื้อหาหลัก: ${content}
+• กลุ่มสาระการเรียนรู้: ${department}
+• เนื้อหาในบทเรียน: ${subjectContent}
+• เนื้อหาที่ต้องการเชื่อมโยง (เรื่องสุโขทัย): ${content}
 • รูปแบบสื่อที่ใช้เล่น (Medium): ${medium}
 • กลุ่มเป้าหมาย: นักเรียนระดับ ${grade}
 • จำนวนผู้เล่น: กลุ่มละ ${players}
@@ -695,7 +734,7 @@
 
 [Task & Action]
 อย่าเพิ่งเขียนคู่มือเกมฉบับสมบูรณ์ออกมาในทันที แต่ให้คุณทำตามขั้นตอนต่อไปนี้:
-1. นำเสนอ Core Loop: อธิบายกระบวนการเล่นหลัก 1 รอบ (Turn) ที่สอดคล้องกับรูปแบบสื่อที่เลือก ว่าผู้เล่นต้องทำอะไรบ้าง และเนื้อหาสุโขทัยเข้าไปสอดแทรกอยู่ในจังหวะไหน
+1. นำเสนอ Core Loop: อธิบายกระบวนการเล่นหลัก 1 รอบ (Turn) ที่สอดคล้องกับรูปแบบสื่อที่เลือก ว่าผู้เล่นต้องทำอะไรบ้าง และเนื้อหาเข้าไปสอดแทรกอยู่ในจังหวะไหน
 2. กำหนด Win Condition: เสนอวิธีตัดสินแพ้ชนะ ที่สะท้อนว่าผู้เล่นบรรลุเป้าหมายการเรียนรู้ที่ตั้งไว้
 3. Clarifying Questions: ให้ถามคำถามกลับมาหาฉัน 3 ข้อ (เช่น เรื่องอุปกรณ์ กฎพิเศษ หรือความยากง่าย) เพื่อกระตุ้นให้ฉันได้คิดต่อยอด ก่อนที่คุณจะสรุปผลเป็นคู่มือเกมฉบับเต็ม`;
 
@@ -714,10 +753,14 @@
             const btn = document.getElementById('btn-submit-game');
             btn.disabled = true;
             try {
+                // บันทึกข้อมูลคนส่ง (ชื่อและโรงเรียน) ลงไปในเกมด้วย
                 await addDoc(collection(db, 'games'), {
                     group_id: AppState.participant.group_id,
+                    submitter_name: AppState.participant.name,
+                    submitter_school: AppState.participant.school,
                     game_name: document.getElementById('game-name').value,
                     rules: document.getElementById('game-rules').value,
+                    link: document.getElementById('game-link').value,
                     timestamp: serverTimestamp()
                 });
                 showToast("ส่งผลงานเกมสำเร็จ!", "success");
@@ -779,13 +822,24 @@
                 const isMyGroup = AppState.participant ? (g.group_id === AppState.participant.group_id) : false;
                 const isDisabled = isMyGroup || !AppState.participant;
                 
+                let linkHtml = '';
+                if(g.link && g.link.trim() !== '') {
+                    let safeLink = g.link.startsWith('http') ? g.link : 'https://' + g.link;
+                    linkHtml = `<a href="${safeLink}" target="_blank" class="mt-2 mb-4 inline-block text-sm text-blue-600 hover:text-blue-800 font-bold bg-blue-50 px-3 py-1 rounded"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดดูสื่อประกอบ</a>`;
+                }
+                
                 const card = document.createElement('div');
                 card.className = 'glass-panel rounded-xl p-5 flex flex-col shadow';
                 card.innerHTML = `
-                    <div class="flex justify-between items-center mb-2"><span class="text-xs bg-gray-200 px-2 py-1 rounded">${g.group_id}</span><span class="text-xs text-sukhothai-red"><i class="fa-solid fa-heart"></i> ${votes}</span></div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs bg-gray-200 px-2 py-1 rounded">${g.group_id}</span>
+                        <span class="text-xs text-sukhothai-red"><i class="fa-solid fa-heart"></i> ${votes}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mb-2 font-medium">เจ้าของผลงาน: ${g.submitter_name || 'ไม่ระบุชื่อ'}</div>
                     <h3 class="font-bold text-lg mb-2">${g.game_name}</h3>
-                    <p class="text-xs text-gray-500 mb-4 flex-1 whitespace-pre-line">${g.rules}</p>
-                    <button onclick="toggleVote('${g.id}', ${hasVoted})" class="w-full py-2 rounded text-sm font-bold ${isDisabled ? 'bg-gray-200 text-gray-400' : hasVoted ? 'bg-sukhothai-red text-white' : 'border border-sukhothai-red text-sukhothai-red'}" ${isDisabled ? 'disabled' : ''}>
+                    <p class="text-xs text-gray-500 mb-2 flex-1 whitespace-pre-line">${g.rules}</p>
+                    ${linkHtml}
+                    <button onclick="toggleVote('${g.id}', ${hasVoted})" class="w-full py-2 rounded text-sm font-bold mt-auto ${isDisabled ? 'bg-gray-200 text-gray-400' : hasVoted ? 'bg-sukhothai-red text-white' : 'border border-sukhothai-red text-sukhothai-red'}" ${isDisabled ? 'disabled' : ''}>
                         ${hasVoted ? 'โหวตแล้ว' : 'โหวต'}
                     </button>
                 `;
@@ -856,16 +910,31 @@
             tbody.innerHTML = '';
             const sortedGames = AppState.games.map(g => ({...g, votes: AppState.allVotes.filter(v=>v.game_id===g.id).length})).sort((a,b)=>b.votes-a.votes);
             sortedGames.forEach((g,i) => {
-                tbody.innerHTML += `<tr><td class="p-3">${i+1}</td><td class="p-3">${g.group_id}</td><td class="p-3">${g.game_name}</td><td class="p-3 text-center text-red-500 font-bold">${g.votes}</td></tr>`;
+                const linkBtn = (g.link && g.link.trim() !== '') ? `<a href="${g.link.startsWith('http') ? g.link : 'https://'+g.link}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700" title="เปิดดูคู่มือ"><i class="fa-solid fa-link"></i></a>` : '';
+                tbody.innerHTML += `<tr>
+                    <td class="p-3">${i+1}</td>
+                    <td class="p-3">
+                        <div class="font-bold">${g.group_id}</div>
+                        <div class="text-xs text-gray-500">เจ้าของผลงาน: ${g.submitter_name || '-'}</div>
+                    </td>
+                    <td class="p-3">${g.game_name} ${linkBtn}</td>
+                    <td class="p-3 text-center text-red-500 font-bold">${g.votes}</td>
+                </tr>`;
             });
         }
 
         window.exportData = () => {
             if(AppState.games.length === 0) return showToast("ไม่มีข้อมูลให้ Export", "error");
-            let csv = "Group,GameName,Rules,Votes\n" + AppState.games.map(g => {
+            
+            // อัปเดตไฟล์ CSV ให้ดึงข้อมูลชื่อและโรงเรียนออกมาด้วย
+            let csv = "Group,CreatorName,School,GameName,Rules,Link,Votes\n" + AppState.games.map(g => {
                 const v = AppState.allVotes.filter(vote=>vote.game_id===g.id).length;
-                return `${g.group_id},"${g.game_name}","${g.rules.replace(/\n/g,' ')}",${v}`;
+                const safeLink = g.link ? g.link : '';
+                const safeName = g.submitter_name ? g.submitter_name : '';
+                const safeSchool = g.submitter_school ? g.submitter_school : '';
+                return `"${g.group_id}","${safeName}","${safeSchool}","${g.game_name}","${g.rules.replace(/\n/g,' ')}","${safeLink}",${v}`;
             }).join('\n');
+            
             const blob = new Blob(["\uFEFF"+csv], {type: 'text/csv;charset=utf-8;'});
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
@@ -873,7 +942,6 @@
             link.click();
         };
 
-        // ฟังก์ชันล้างข้อมูล (Reset Database)
         window.resetDatabase = async () => {
             if(!confirm("⚠️ คำเตือน: คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูล 'ผู้เข้าร่วม', 'ผลงานเกม' และ 'ยอดโหวต' ทั้งหมด?\n\n(แนะนำให้กด Export ข้อมูลเก็บไว้ก่อนกดยืนยัน)")) return;
             
@@ -890,7 +958,7 @@
                 localStorage.removeItem(`participant_${appId}`);
                 
                 showToast("ล้างข้อมูลในระบบเรียบร้อยแล้ว!", "success");
-                setTimeout(() => window.location.reload(), 1500); // รีเฟรชหน้าเว็บให้แอดมินเริ่มใหม่
+                setTimeout(() => window.location.reload(), 1500); 
             } catch(e) {
                 console.error(e);
                 showToast("เกิดข้อผิดพลาดในการล้างข้อมูล", "error");
